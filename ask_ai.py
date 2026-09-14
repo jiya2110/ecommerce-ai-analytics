@@ -11,12 +11,12 @@ import json
 load_dotenv()
 client = Groq()  # automatically reads GROQ_API_KEY from environment
 
-# --- Database connection (same as before) ---
-DB_USER = "root"
-DB_PASSWORD = "UserJain@123"
-DB_HOST = "localhost"
-DB_PORT = 3306
-DB_NAME = "my_database"
+# --- Database connection (now reads from .env, connects to Aiven with SSL) ---
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = int(os.getenv("DB_PORT"))
+DB_NAME = os.getenv("DB_NAME")
 
 connection_url = URL.create(
     "mysql+mysqlconnector",
@@ -26,7 +26,7 @@ connection_url = URL.create(
     port=DB_PORT,
     database=DB_NAME,
 )
-engine = create_engine(connection_url)
+engine = create_engine(connection_url, connect_args={"ssl_disabled": False})
 
 # --- Pull schema as text (for the AI prompt) ---
 inspector = inspect(engine)
